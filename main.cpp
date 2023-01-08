@@ -174,7 +174,7 @@ std::ostream &operator<<(std::ostream &os, const world &w) {
 int main() {
   std::cout << "hello world\n";
 
-  world w = world(500, 500);
+  world w = world(50, 10);
   w.populate();
 
   std::cout << "\x1B[2J" << w;
