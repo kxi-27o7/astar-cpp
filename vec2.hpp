@@ -4,8 +4,6 @@
 #include <cmath>
 #include <cstdlib>
 
-// typedef std::tuple<unsigned int, unsigned int> vec2;
-
 class vec2 {
 public:
   unsigned int x;
