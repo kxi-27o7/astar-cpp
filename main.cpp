@@ -1,3 +1,4 @@
+#include <chrono>
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
@@ -5,6 +6,7 @@
 #include <iostream>
 #include <optional>
 #include <random>
+#include <thread>
 #include <vector>
 
 #include "vec2.hpp"
@@ -18,6 +20,15 @@ public:
   int fcost;
 
   cell(cell_state __state) { state = __state; }
+  void calculate(unsigned int __source, int __fcost) {
+    state = cell_state::calculated;
+    source = __source;
+    fcost = __fcost;
+  }
+  void flag(unsigned int __source) {
+    state = cell_state::flagged;
+    source = __source;
+  }
 };
 std::ostream &operator<<(std::ostream &os, const cell &cell) {
   switch (cell.state) {
@@ -97,9 +108,7 @@ public:
       auto hcost = get_dist(target_pos, end);
       auto fcost = gcost + hcost;
 
-      cells[target_index].fcost = fcost;
-      cells[target_index].state = cell_state::calculated;
-      cells[target_index].source = source_id;
+      cells[target_index].calculate(source_id, fcost);
 
       (*calculated).push_back(target_index);
     }
@@ -149,8 +158,7 @@ public:
 
     if (min_index) {
       if (min_source) {
-        cells[*min_index].state = cell_state::flagged;
-        cells[*min_index].source = *min_source;
+        cells[*min_index].flag(*min_source);
         (*flagged).push_back(*min_index);
         return *min_index;
       }
@@ -194,6 +202,9 @@ int main() {
       w.calculate_surrounding(&calculated, coord.x, coord.y);
 
       flagged_id = w.flag(&calculated, &flagged);
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      std::cout << "\x1B[2J" << w;
     }
   }
 
@@ -210,6 +221,9 @@ int main() {
       } else {
         break;
       }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      std::cout << "\x1B[2J" << w;
     }
   }
 
